@@ -1,4 +1,9 @@
-This is for a python dxf library to read and write dxf files. The files found here are not for anything that you want to work well. They are a work in progress.
+What is it.
+
+It is the dxf portion of my cam thinking. Right now the library will open a dxf and load it into a dxf object. Then a user can get to some of the information. Currently only a few entities are supported, although a few more should be on the way soon. It is not very complete and needs lots of work.
+
+Still, if you want to take a look please so. Just download the files and extract them to a directory, and run the testing.py ("python testing.py NONAME.dxf"). It is probably more confusing than anything else. testing.py will print out a bunch of information about the dxt. The first few thing are how many things are in the section section. The second part prints out some information about the supported entities in the dxf.
+
 
 Files
 README.txt : This file.
