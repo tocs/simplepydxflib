@@ -1,0 +1,7 @@
+This is for a python dxf library to read and write dxf files. The files found here are not for anything that you want to work well. They are a work in progress.
+
+Files
+README.txt : This file.
+dxflib.py  : A simple and incompleate dxf library for python.
+NONAME.dxf : A simple dxf file to use in an example.
+testing.py : A simple example of using the dxflib, not very clear.
