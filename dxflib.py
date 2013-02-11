@@ -320,13 +320,47 @@ class LWPOLYLINE(ENTITIES):
                 self.verts = []
 
         def asLinesArcs(self):
+                """Returns a list of lines and arcs in the polyline
+                format:
+                ["LINE", [start point xyz], [end point xyz]]
+                or 
+                ["ARC", [[start point xyz], [end point xyz], [center point xyz]]
+
+                only supports closed polylines for now
+                """
+                
                 ents = []
-                for e in xrange(len(self.verts) - 1):
+                for e in xrange(len(self.verts)):
                     # for lines
-                    if (self.verts[e][3] == 0.0) and (self.verts[e + 1][3] == 0.0):
+                    if (self.verts[e][3] == 0.0):
+                        nextPoint = (e + 1) % len(self.verts)
                         ents.append(["LINE", 
                                      self.verts[e][0:3],
-                                     self.verts[e + 1][0:3]])
+                                     self.verts[nextPoint][0:3]])
+                    else:
+                        nextPoint = (e + 1) % len(self.verts)
+                        # get center using bulge factor
+                        bulge = self.verts[e][3]
+                        angle = 4 * numpy.arctan(bulge) # included angle for center and 2 end points
+                        startPt = numpy.array(self.verts[e][0:3])
+                        endPt = numpy.array(self.verts[nextPoint][0:3])
+                        cordCenter = (endPt + startPt) / 2.0
+                        sP2cCVector = cordCenter - startPt
+                        sP2cCMag = numpy.sqrt(sum(pow(sP2cCVector, 2.0)))
+                        cC2CircleCMag = sP2cCMag / numpy.tan(angle / 2.0)
+                        cC2CircleCUnitV = numpy.array([-1 * sP2cCVector[1], sP2cCVector[0], 0])  / sP2cCMag
+                        center = cordCenter + (cC2CircleCUnitV * cC2CircleCMag)
+                        ents.append(["ARC", 
+                                     list(startPt),
+                                     list(endPt),
+                                     list(center)])
+                                     
+
+                        
+                # got to be better ways to do this
+                # get rid of single point at end if last move is an arc 
+                if ents[-1][1] == ents[-1][2]:
+                    ents.pop(-1)
 
                 return(ents)
                         
@@ -355,21 +389,14 @@ class LWPOLYLINE(ENTITIES):
                         if (x1 != None) and (y1 != None):
                                 pt = [x1, y1, self.elevation]
                                 if len(dxfTxt) >= l + 3:
-                                        if (dxfTxt[l + 2].rstrip() == " 42"):
-                                            pt.append(float(dxfTxt[l + 3]))
+                                        if dxfTxt[l + 2].rstrip() == " 42":
+                                                pt.append(float(dxfTxt[l + 3]))
                                         else:
-                                                pt.append(0)
-                                        self.verts.append(pt)
-                                        x1 = None
-                                        y1 = None
-
-                if (x1 != None) and (y1 != None):
-                        pt = [x1, y1, self.elevation]
-                        if len(dxfTxt) >= l + 3:
-                                if (dxfTxt[l + 2].rstrip() == " 42"):
-                                        pt.append(float(dxfTxt[l + 3]))
+                                                        pt.append(0)
                                 else:
-                                        pt.append(0)
+                                        pt.append(0)                                                
+
+
                                 self.verts.append(pt)
                                 x1 = None
                                 y1 = None
