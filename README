@@ -4,9 +4,15 @@ It is the dxf portion of my cam thinking. Right now the library will open a dxf 
 
 Still, if you want to take a look please so. Just download the files and extract them to a directory, and run the testing.py ("python testing.py NONAME.dxf"). It is probably more confusing than anything else. testing.py will print out a bunch of information about the dxt. The first few thing are how many things are in the section section. The second part prints out some information about the supported entities in the dxf.
 
+linuxCNCCAM.py
+Will open a simple dxf file, with lwpolylines, into linuxCNC. It will only open lwpolylines and does not deal with height of the line. The lwpolyline can have both lines and arcs. The filenames needs to be set in by editing the filename in the linuxCNCCAM.py file manualy (for now). Also, the safe heigth, cut speed speed, start depth, end depth, and step depths need to be manually edited in the linusCNCCAM.py file. All the cuts will be to the same depth and use the same feed rate. The depths should be negative if the top of the material is at zero.
+
+This is all experimental and you should be careful using it. Check with a simulator before cutting for real.
 
 Files
 README.txt : This file.
 dxflib.py  : A simple and incompleate dxf library for python.
 NONAME.dxf : A simple dxf file to use in an example.
 testing.py : A simple example of using the dxflib, not very clear.
+linuxCNCCAM.py : simple script to open a dxf in linuxCNC
+NONAME_2.dxf   : simple example of lwpolylines to use with linuxCNCCAM.py

@@ -311,7 +311,7 @@ class LWPOLYLINE(ENTITIES):
         def __init__(self):
                 ENTITIES.__init__(self)
                 self.numberOfVerts = 0        # 90
-                self.closed = 0               # 70 1 : yes  ,  2 : no
+                self.closed = 0               # 70 1 : yes  ,  0 : no
                 self.elevation = 0.0            # 38
                 self.constantWidth = None     # 43  
                 self.startWidth = None        # 40
@@ -324,13 +324,19 @@ class LWPOLYLINE(ENTITIES):
                 format:
                 ["LINE", [start point xyz], [end point xyz]]
                 or 
-                ["ARC", [[start point xyz], [end point xyz], [center point xyz]]
-
+                ["ARC", [[start point xyz], [end point xyz], [center point xyz], cw/ccw]
+                cw  : 1 (clockwise)
+                ccw : -1 (counterclock wise)
                 only supports closed polylines for now
                 """
                 
                 ents = []
-                for e in xrange(len(self.verts)):
+                # print "self.numberOfVerts:", self.numberOfVerts
+                if self.closed == 1:
+                        count = self.numberOfVerts
+                else:
+                        count = self.numberOfVerts - 1
+                for e in xrange(count):
                     # for lines
                     if (self.verts[e][3] == 0.0):
                         nextPoint = (e + 1) % len(self.verts)
@@ -350,10 +356,17 @@ class LWPOLYLINE(ENTITIES):
                         cC2CircleCMag = sP2cCMag / numpy.tan(angle / 2.0)
                         cC2CircleCUnitV = numpy.array([-1 * sP2cCVector[1], sP2cCVector[0], 0])  / sP2cCMag
                         center = cordCenter + (cC2CircleCUnitV * cC2CircleCMag)
+                        if bulge > 0:
+                            direction = 1
+                        elif bulge < 0:
+                            direction = -1
+                        else:
+                            direction = 0
                         ents.append(["ARC", 
                                      list(startPt),
                                      list(endPt),
-                                     list(center)])
+                                     list(center),
+                                     direction])
                                      
 
                         
@@ -375,9 +388,9 @@ class LWPOLYLINE(ENTITIES):
                         elif dxfTxt[l].rstrip() == " 38":
                                 self.elevation = float(dxfTxt[l + 1])
                         elif dxfTxt[l].rstrip() == " 90":
-                                self.numberOfVerts = float(dxfTxt[l + 1])
+                                self.numberOfVerts = int(dxfTxt[l + 1])
                         elif dxfTxt[l].rstrip() == " 70":
-                                self.closed = float(dxfTxt[l + 1])
+                                self.closed = int(dxfTxt[l + 1])
                         elif dxfTxt[l].rstrip() == " 43":
                                 self.constantWidth = float(dxfTxt[l + 1])
                         elif dxfTxt[l].rstrip() == " 40":
