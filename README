@@ -1,3 +1,8 @@
+This is probably obsolete.
+Take a look at https://github.com/tocs/cam.
+Good luck.
+
+
 What is it.
 
 It is the dxf portion of my cam thinking. Right now the library will open a dxf and load it into a dxf object. Then a user can get to some of the information. Currently only a few entities are supported, although a few more should be on the way soon. It is not very complete and needs lots of work.
